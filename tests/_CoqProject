@@ -3,6 +3,6 @@
 
 -R . Test
 
-core.v
+stdlib.v
 init.v
 anomaly_print_projections.v
