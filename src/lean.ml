@@ -1207,7 +1207,7 @@ and declare_ind n { params; ty; ctors; univs } i =
       ( inst, uentry )
     in
     (* lean 4 change: always dep? was not squashy.always_prop*)
-    (lean_scheme env ~dep:true mind inst u, uentry)
+    (lean_scheme env ~dep:(not squashy.always_prop) mind inst u, uentry)
   in
   let nrec = N.append n "rec" in
   let elims =
