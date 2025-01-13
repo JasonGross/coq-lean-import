@@ -893,12 +893,42 @@ let one_more_int nat =
 
 let max_nat_int = Z.of_string "100000"
 
-let nat_int nat i =
+let pos_int pos n =
+  assert (Z.lt Z.zero n);
+  let xI = Constr.mkConstructU ((pos,1), UVars.Instance.empty) in
+  let xO = Constr.mkConstructU ((pos,2), UVars.Instance.empty) in
+  let xH = Constr.mkConstructU ((pos,3), UVars.Instance.empty) in
+  let rec find_msb i =
+    if Z.eq (n lsr i) Z.zero then i
+    else find_msb (i + 1)
+  in
+  let msb = find_msb 0 in
+  let rec aux i acc =
+    if Z.eq i Z.zero
+    then acc
+    else let c = if Z.eq ((n lsr i) land 1) Z.one then xI else xO in
+        let acc = Constr.mkApp (c, [|acc|]) in
+        aux (i - 1) acc
+  in aux (msb - 1) xH
+
+let z_int z pos i =
+  assert (Z.leq Z.zero i);
+  if Z.eq i Z.zero then
+    Constr.mkConstructU ((z, 1), UVars.Instance.empty)
+  else
+    let c = Constr.mkConstructU ((z, 2), UVars.Instance.empty) in
+    Constr.mkApp (c, [|pos_int pos i|])
+
+let nat_z_int z pos z_to_nat i =
+  Constr.mkApp (z_to_nat, [|z_int z pos i|])
+
+let nat_int nat z pos z_to_nat i =
   assert (Z.leq Z.zero i);
   if Z.leq max_nat_int i
-  then CErrors.user_err Pp.(str "native int too big: " ++ str (Z.to_string i));
-  while Z.lt !max_known_int i do one_more_int nat done;
-  ZMap.get i !nat_ints
+  then nat_z_int z pos z_to_nat i
+  else
+    while Z.lt !max_known_int i do one_more_int nat done;
+    ZMap.get i !nat_ints
 
 let rec to_constr =
   let open Constr in
@@ -963,7 +993,11 @@ let rec to_constr =
     (* [nat_ints] is not synchronized so ensure Nat is instantiated *)
     instantiate (N.append N.anon "Nat") [] >>= fun nat ->
     let nat, _ = Constr.destInd nat in
-    ret (nat_int nat i)
+    instantiate (N.append N.anon "Z") [] >>= fun z ->
+    let z, _ = Constr.destInd z in
+    instantiate (N.append N.anon "positive") [] >>= fun pos ->
+    let pos, _ = Constr.destInd pos in
+    ret (nat_int nat z pos z_to_nat i)
   | String _ -> CErrors.user_err Pp.(str "TODO native string")
 
 and instantiate n univs uconv =
