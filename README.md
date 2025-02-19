@@ -1,35 +1,28 @@
 Alpha Announcement: Coq is a Lean Typechecker
 
-# Warning
-
-Currently in the process of converting to a plugin, use tag
-`lean-import-alpha1` at https://github.com/SkySkimmer/coq instead.
-
 # Introduction
 
-Presenting a custom version of Coq, extended with definitional UIP
-(using the version at https://github.com/coq/coq/pull/10390) and
-providing a brand new `Lean Import` command.
-
-It is available at https://github.com/SkySkimmer/coq/tree/coq-lean-import
+This plugin provides the `Lean Import` command.
 
 This is an experimental alpha, it is useful to compare how Lean and
-Coq work but probably not much beyond that.
-
-The `Lean Import` command itself can be implemented as a plugin (and
-will be once a few changes are upstreamed), but typechecking of Lean
-terms requires UIP.
+Rocq work but probably not much beyond that.
 
 # How do I install this?
 
-Use your favorite installation procedure for Coq, using
-https://github.com/SkySkimmer/coq/tree/coq-lean-import for the source.
+This is a standard rocq makefile project and can be installed with
+
+```sh
+opam install coq-lean-import
+```
 
 # How do I use this?
 
 You need Lean [exported files](https://github.com/leanprover/lean/blob/master/doc/export_format.md)
 as input.
-(I used Lean version 3.4.2, but this format looks pretty stable so other versions should work)
+
+For use with Lean 4, you can use [lean4export](https://github.com/leanprover/lean4export).
+
+For use with Lean 3, see [commit ce8ed08172d3247d992dacab08e0e8f59864a57b](https://github.com/coq-community/rocq-lean-import/commits/ce8ed08172d3247d992dacab08e0e8f59864a57b), which is compatible with Coq 8.20 and Lean 3, or [commit c513cee4f5edf8e8a06ba553ca58de5142cffde6](https://github.com/coq-community/rocq-lean-import/commits/c513cee4f5edf8e8a06ba553ca58de5142cffde6) which is compatible with Lean 3 and [coq/coq@a00be77](https://github.com/coq/coq/commit/a00be7706fad3eebbaec3d77ba2bb5cba516fb2b).
 
 For your convenience, I have uploaded a few examples:
 - [core.out](https://gist.githubusercontent.com/SkySkimmer/c8705b6d2d561ff7537d1dcabed371a0/raw/1538c7133d1334061e9ced67d3894d0b82cc83a4/core.out) (256KB)
